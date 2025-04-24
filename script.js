@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportCsvButton = document.getElementById('export-csv');
     const categoryChartCanvas = document.getElementById('category-chart');
     const monthlyChartCanvas = document.getElementById('monthly-chart');
-    const categoryChartCtx = categoryChartCanvas.getContext('2d');
-    const monthlyChartCtx = monthlyChartCanvas.getContext('2d');
+    const categoryChartCtx = categoryChartCanvas ? categoryChartCanvas.getContext('2d') : null;
+    const monthlyChartCtx = monthlyChartCanvas ? monthlyChartCanvas.getContext('2d') : null;
 
     let transactions = loadTransactions();
     let expenseChart;
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('transactions', JSON.stringify(transactions));
         updateSummary();
         renderTransactions();
-        updateCategoryChart();
-        updateMonthlyChart();
+        if (categoryChartCtx) updateCategoryChart();
+        if (monthlyChartCtx) updateMonthlyChart();
     }
 
     function updateCategoryOptions() {
@@ -148,30 +148,32 @@ document.addEventListener('DOMContentLoaded', () => {
             expenseChart.destroy();
         }
 
-        expenseChart = new Chart(categoryChartCtx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Expenses by Category'
+        if (categoryChartCtx) {
+            expenseChart = new Chart(categoryChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Expenses by Category'
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     function updateMonthlyChart() {
@@ -198,53 +200,55 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyChart.destroy();
         }
 
-        monthlyChart = new Chart(monthlyChartCtx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: incomeData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Expense',
-                        data: expenseData,
-                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Amount ($)'
+        if (monthlyChartCtx) {
+            monthlyChart = new Chart(monthlyChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: incomeData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expense',
+                            data: expenseData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
                         }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Month'
-                        }
-                    }
+                    ]
                 },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Monthly Income vs Expense'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Income vs Expense'
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     function exportCSV() {
@@ -276,6 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCategoryOptions();
     updateSummary();
     renderTransactions();
-    updateCategoryChart();
-    updateMonthlyChart();
+    if (categoryChartCtx) updateCategoryChart();
+    if (monthlyChartCtx) updateMonthlyChart();
 });
