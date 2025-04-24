@@ -32,9 +32,18 @@ function init() {
     exportBtn.addEventListener('click', exportToCSV);
 }
 
+const typeSelect = document.getElementById('type');
+const categorySelect = document.getElementById('category');
+
+const categories = {
+    income: ['Salary', 'Freelance', 'Investments', 'Gifts', 'Other Income'],
+    expense: ['Food', 'Transportation', 'Housing', 'Utilities', 'Healthcare', 'Entertainment', 'Education', 'Shopping', 'Other Expenses']
+};
+
 function updateCategories() {
     const type = typeSelect.value;
-    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    categorySelect.innerHTML = '<option value="">Select Category</option>'; // Reset categories
+
     if (type) {
         categories[type].forEach(category => {
             const option = document.createElement('option');
@@ -42,8 +51,18 @@ function updateCategories() {
             option.textContent = category;
             categorySelect.appendChild(option);
         });
+    } else {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'text-red-500 text-sm mt-2';
+        errorMessage.textContent = 'No categories available for the selected type';
+        categorySelect.parentElement.appendChild(errorMessage);
     }
 }
+
+typeSelect.addEventListener('change', updateCategories);
+
+// Call updateCategories on initial load to populate dropdown based on the default selection
+updateCategories();
 
 function addTransaction(e) {
     e.preventDefault();
