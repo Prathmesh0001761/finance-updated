@@ -8,6 +8,7 @@ const transactionsBody = document.getElementById('transactions-body');
 const totalIncomeEl = document.getElementById('total-income');
 const totalExpenseEl = document.getElementById('total-expense');
 const balanceEl = document.getElementById('balance');
+const exportBtn = document.getElementById('export-csv');
 const categoryChartCanvas = document.getElementById('category-chart');
 const monthlyChartCanvas = document.getElementById('monthly-chart');
 
@@ -28,10 +29,12 @@ function init() {
     updateSummary();
     renderCharts();
 
+    // Call updateCategories on initialization to populate the category dropdown
     updateCategories();
 
     typeSelect.addEventListener('change', updateCategories);
     transactionForm.addEventListener('submit', addTransaction);
+    exportBtn.addEventListener('click', exportToCSV);
 }
 
 function updateCategories() {
@@ -83,10 +86,9 @@ function loadTransactions() {
 
     transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    transactions.forEach((transaction, index) => {
+    transactions.forEach(transaction => {
         const row = document.createElement('tr');
         row.className = `${transaction.type}-row`;
-        row.style.animationDelay = `${index * 50}ms`; // Apply staggered fade-in
         row.innerHTML = `
             <td>${formatDate(transaction.date)}</td>
             <td>${transaction.description || '-'}</td>
@@ -131,7 +133,103 @@ function formatDate(dateString) {
 }
 
 function renderCharts() {
-    // Chart rendering code remains the same...
+    const transactions = getTransactions();
+    const expenseCategoriesData = {};
+    categories.expense.forEach(cat => expenseCategoriesData[cat] = 0);
+
+    transactions.filter(t => t.type === 'expense').forEach(t => {
+        expenseCategoriesData[t.category] += t.amount;
+    });
+
+    const categoryCtx = categoryChartCanvas ? categoryChartCanvas.getContext('2d') : null;
+    if (categoryCtx) {
+        if (categoryChart) categoryChart.destroy();
+        categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(expenseCategoriesData),
+                datasets: [{
+                    data: Object.values(expenseCategoriesData),
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                        '#9966FF', '#FF9F40', '#8AC24A', '#607D8B'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+
+    const monthlyData = {};
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    for (let i = 0; i < 12; i++) monthlyData[i] = { income: 0, expense: 0 };
+    transactions.forEach(t => {
+        const d = new Date(t.date);
+        if (d.getFullYear() === currentYear) {
+            monthlyData[d.getMonth()][t.type] += t.amount;
+        }
+    });
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyCtx = monthlyChartCanvas ? monthlyChartCanvas.getContext('2d') : null;
+    if (monthlyCtx) {
+        if (monthlyChart) monthlyChart.destroy();
+        monthlyChart = new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: months.map((_, i) => monthlyData[i].income),
+                        backgroundColor: '#4cc9f0'
+                    },
+                    {
+                        label: 'Expense',
+                        data: months.map((_, i) => monthlyData[i].expense),
+                        backgroundColor: '#f72585'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+function exportToCSV() {
+    const transactions = getTransactions();
+    let csv = 'Date,Description,Category,Type,Amount\n';
+    transactions.forEach(t => {
+        csv += `${t.date},"${t.description}",${t.category},${t.type},${t.amount}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transactions.csv';
+    a.click();
 }
 
 init();
