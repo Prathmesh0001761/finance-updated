@@ -4,76 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Finance Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fa-solid fa-wallet"></i> Personal Finance Tracker</h1>
-        </header>
-        <section class="summary">
-            <div class="card income">
-                <h3>Total Income</h3>
-                <p id="total-income">$0.00</p>
-            </div>
-            <div class="card expense">
-                <h3>Total Expense</h3>
-                <p id="total-expense">$0.00</p>
-            </div>
-            <div class="card balance">
-                <h3>Balance</h3>
-                <p id="balance">$0.00</p>
-            </div>
-        </section>
-        <section class="form-section">
-            <form id="transaction-form" class="transaction-form">
+        <h1>Personal Finance Tracker</h1>
+        <form id="transaction-form">
+            <div>
+                <label for="type">Transaction Type</label>
                 <select id="type" required>
-                    <option value="">Type</option>
                     <option value="income">Income</option>
                     <option value="expense">Expense</option>
                 </select>
+            </div>
+            <div>
+                <label for="category">Category</label>
                 <select id="category" required>
                     <option value="">Select Category</option>
                 </select>
-                <input type="number" id="amount" placeholder="Amount" min="0.01" step="0.01" required>
-                <input type="date" id="date" required>
-                <input type="text" id="description" placeholder="Description">
-                <button type="submit" class="btn-primary"><i class="fa fa-plus"></i> Add</button>
-            </form>
-        </section>
-        <section class="transactions-section">
-            <div class="transactions-header">
-                <h2>Transactions</h2>
-                <button id="export-csv" class="btn-secondary"><i class="fa fa-download"></i> Export CSV</button>
             </div>
-            <table class="transactions-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="transactions-body">
-                    <!-- Transactions will be loaded here -->
-                </tbody>
-            </table>
-        </section>
-        <section class="charts-section">
-            <div class="chart-card">
-                <h3>Expenses by Category</h3>
-                <canvas id="category-chart" height="200"></canvas>
+            <div>
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" required />
             </div>
-            <div class="chart-card">
-                <h3>Monthly Overview</h3>
-                <canvas id="monthly-chart" height="200"></canvas>
+            <div>
+                <label for="date">Date</label>
+                <input type="date" id="date" required />
             </div>
-        </section>
+            <div>
+                <label for="description">Description</label>
+                <input type="text" id="description" />
+            </div>
+            <button type="submit">Add Transaction</button>
+        </form>
+
+        <h2>Summary</h2>
+        <div>
+            <p>Total Income: <span id="total-income">$0.00</span></p>
+            <p>Total Expense: <span id="total-expense">$0.00</span></p>
+            <p>Balance: <span id="balance">$0.00</span></p>
+        </div>
+
+        <h2>Transactions</h2>
+        <table id="transactions-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="transactions-body">
+                <!-- Transactions will appear here -->
+            </tbody>
+        </table>
+
+        <button id="export-csv">Export to CSV</button>
+
+        <h2>Charts</h2>
+        <canvas id="category-chart"></canvas>
+        <canvas id="monthly-chart"></canvas>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
