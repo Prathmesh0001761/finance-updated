@@ -180,10 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const monthlyData = {};
 
         transactions.forEach(t => {
-            const monthYear = new Date(t.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+            const date = new Date(t.date);
+            const year = date.getFullYear();
+            const month = date.toLocaleString('en-US', { month: 'short' });
+            const monthYear = `<span class="math-inline">\{month\}\-</span>{year}`;
+
             if (!monthlyData[monthYear]) {
                 monthlyData[monthYear] = { income: 0, expense: 0 };
             }
+
             if (t.type === 'income') {
                 monthlyData[monthYear].income += t.amount;
             } else if (t.type === 'expense') {
@@ -191,10 +196,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const sortedMonths = Object.keys(monthlyData).sort((a, b) => new Date(a) - new Date(b));
+        const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
+            const [monthA, yearA] = a.split('-');
+            const [monthB, yearB] = b.split('-');
+            const dateA = new Date(`${monthA} 1, ${yearA}`);
+            const dateB = new Date(`${monthB} 1, ${yearB}`);
+            return dateA - dateB;
+        });
+
         const labels = sortedMonths;
-        const incomeData = sortedMonths.map(month => monthlyData[month].income);
-        const expenseData = sortedMonths.map(month => monthlyData[month].expense);
+        const incomeData = sortedMonths.map(monthYear => monthlyData[monthYear].income);
+        const expenseData = sortedMonths.map(monthYear => monthlyData[monthYear].expense);
 
         if (monthlyChart) {
             monthlyChart.destroy();
@@ -259,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const header = 'Date,Description,Category,Amount,Type\n';
         const rows = transactions.map(transaction => {
-            return `${transaction.date},"${transaction.description.replace(/"/g, '""')}",${transaction.category},${transaction.amount},${transaction.type}`;
+            return `<span class="math-inline">\{transaction\.date\},"</span>{transaction.description.replace(/"/g, '""')}",<span class="math-inline">\{transaction\.category\},</span>{transaction.amount},${transaction.type}`;
         }).join('\n');
 
         const csvData = header + rows;
@@ -267,19 +279,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'transactions.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }
-
-    transactionForm.addEventListener('submit', addTransaction);
-    exportCsvButton.addEventListener('click', exportCSV);
-
-    updateCategoryOptions();
-    updateSummary();
-    renderTransactions();
-    if (categoryChartCtx) updateCategoryChart();
-    if (monthlyChartCtx) updateMonthlyChart();
-});
+        a.download = 'transactions
