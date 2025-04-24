@@ -99,13 +99,13 @@ function loadTransactions() {
     });
 }
 
-window.deleteTransaction = function(id) {
+function deleteTransaction(id) {
     if (confirm('Are you sure you want to delete this transaction?')) {
         const transactions = getTransactions().filter(t => t.id !== id);
         localStorage.setItem('transactions', JSON.stringify(transactions));
         init();
     }
-};
+}
 
 function updateSummary() {
     const transactions = getTransactions();
@@ -129,11 +129,11 @@ function formatDate(dateString) {
 
 function renderCharts() {
     const transactions = getTransactions();
-    const expenseCategories = {};
-    categories.expense.forEach(cat => expenseCategories[cat] = 0);
+    const expenseCategoriesData = {};
+    categories.expense.forEach(cat => expenseCategoriesData[cat] = 0);
 
     transactions.filter(t => t.type === 'expense').forEach(t => {
-        expenseCategories[t.category] += t.amount;
+        expenseCategoriesData[t.category] += t.amount;
     });
 
     const categoryCtx = document.getElementById('category-chart').getContext('2d');
@@ -141,12 +141,12 @@ function renderCharts() {
     categoryChart = new Chart(categoryCtx, {
         type: 'doughnut',
         data: {
-            labels: Object.keys(expenseCategories),
+            labels: Object.keys(expenseCategoriesData),
             datasets: [{
-                data: Object.values(expenseCategories),
+                data: Object.values(expenseCategoriesData),
                 backgroundColor: [
                     '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                    '#9966FF', '#FF9F40', '#8AC24A', '#607D8B', '#f72585'
+                    '#9966FF', '#FF9F40', '#8AC24A', '#607D8B'
                 ]
             }]
         },
@@ -156,10 +156,6 @@ function renderCharts() {
                 legend: {
                     position: 'right'
                 }
-            },
-            animation: {
-                animateRotate: true,
-                animateScale: true
             }
         }
     });
@@ -207,10 +203,6 @@ function renderCharts() {
                 y: {
                     beginAtZero: true
                 }
-            },
-            animation: {
-                duration: 1200,
-                easing: 'easeOutBounce'
             }
         }
     });
