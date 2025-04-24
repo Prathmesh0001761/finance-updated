@@ -9,8 +9,6 @@ const totalIncomeEl = document.getElementById('total-income');
 const totalExpenseEl = document.getElementById('total-expense');
 const balanceEl = document.getElementById('balance');
 const exportBtn = document.getElementById('export-csv');
-const categoryChartCanvas = document.getElementById('category-chart');
-const monthlyChartCanvas = document.getElementById('monthly-chart');
 
 const categories = {
     income: ['Salary', 'Freelance', 'Investments', 'Gifts', 'Other Income'],
@@ -28,9 +26,6 @@ function init() {
     loadTransactions();
     updateSummary();
     renderCharts();
-
-    // Call updateCategories on initialization to populate the category dropdown
-    updateCategories();
 
     typeSelect.addEventListener('change', updateCategories);
     transactionForm.addEventListener('submit', addTransaction);
@@ -104,13 +99,13 @@ function loadTransactions() {
     });
 }
 
-function deleteTransaction(id) {
+window.deleteTransaction = function(id) {
     if (confirm('Are you sure you want to delete this transaction?')) {
         const transactions = getTransactions().filter(t => t.id !== id);
         localStorage.setItem('transactions', JSON.stringify(transactions));
         init();
     }
-}
+};
 
 function updateSummary() {
     const transactions = getTransactions();
@@ -134,38 +129,40 @@ function formatDate(dateString) {
 
 function renderCharts() {
     const transactions = getTransactions();
-    const expenseCategoriesData = {};
-    categories.expense.forEach(cat => expenseCategoriesData[cat] = 0);
+    const expenseCategories = {};
+    categories.expense.forEach(cat => expenseCategories[cat] = 0);
 
     transactions.filter(t => t.type === 'expense').forEach(t => {
-        expenseCategoriesData[t.category] += t.amount;
+        expenseCategories[t.category] += t.amount;
     });
 
-    const categoryCtx = categoryChartCanvas ? categoryChartCanvas.getContext('2d') : null;
-    if (categoryCtx) {
-        if (categoryChart) categoryChart.destroy();
-        categoryChart = new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(expenseCategoriesData),
-                datasets: [{
-                    data: Object.values(expenseCategoriesData),
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                        '#9966FF', '#FF9F40', '#8AC24A', '#607D8B'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'right'
-                    }
+    const categoryCtx = document.getElementById('category-chart').getContext('2d');
+    if (categoryChart) categoryChart.destroy();
+    categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(expenseCategories),
+            datasets: [{
+                data: Object.values(expenseCategories),
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                    '#9966FF', '#FF9F40', '#8AC24A', '#607D8B', '#f72585'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
                 }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true
             }
-        });
-    }
+        }
+    });
 
     const monthlyData = {};
     const now = new Date();
@@ -180,41 +177,43 @@ function renderCharts() {
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthlyCtx = monthlyChartCanvas ? monthlyChartCanvas.getContext('2d') : null;
-    if (monthlyCtx) {
-        if (monthlyChart) monthlyChart.destroy();
-        monthlyChart = new Chart(monthlyCtx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: months.map((_, i) => monthlyData[i].income),
-                        backgroundColor: '#4cc9f0'
-                    },
-                    {
-                        label: 'Expense',
-                        data: months.map((_, i) => monthlyData[i].expense),
-                        backgroundColor: '#f72585'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
+    const monthlyCtx = document.getElementById('monthly-chart').getContext('2d');
+    if (monthlyChart) monthlyChart.destroy();
+    monthlyChart = new Chart(monthlyCtx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: months.map((_, i) => monthlyData[i].income),
+                    backgroundColor: '#4cc9f0'
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                {
+                    label: 'Expense',
+                    data: months.map((_, i) => monthlyData[i].expense),
+                    backgroundColor: '#f72585'
                 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutBounce'
             }
-        });
-    }
+        }
+    });
 }
 
 function exportToCSV() {
