@@ -5,77 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Finance Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="max-w-screen-lg mx-auto p-6">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-800 animate__animated animate__fadeIn">Personal Finance Tracker</h1>
-        </div>
+<body class="bg-gray-100 font-inter">
 
-        <div class="grid lg:grid-cols-2 gap-6">
-            <div class="card bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-bold text-gray-700 mb-4">Transaction Form</h2>
-                <form id="transaction-form" class="space-y-4">
-                    <div class="flex gap-4">
-                        <div class="w-1/2">
-                            <label for="type" class="block text-gray-600">Type</label>
-                            <select id="type" class="w-full p-2 border rounded-lg">
-                                <option value="">Select Type</option>
-                                <option value="income">Income</option>
-                                <option value="expense">Expense</option>
-                            </select>
-                        </div>
-                        <div class="w-1/2">
-                            <label for="category" class="block text-gray-600">Category</label>
-                            <select id="category" class="w-full p-2 border rounded-lg">
-                                <option value="">Select Category</option>
-                            </select>
-                            <p id="category-error" class="text-red-500 text-sm hidden">Please select a category.</p>
-                        </div>
+    <div class="container mx-auto p-4">
+        <h1 class="text-4xl font-bold text-center mb-8 animate__animated animate__fadeIn">Personal Finance Tracker</h1>
+
+        <div class="grid lg:grid-cols-2 gap-4">
+            <!-- Form Section -->
+            <div class="card bg-white shadow-lg rounded-xl p-4">
+                <h2 class="text-2xl font-semibold mb-4">Add Transaction</h2>
+                <form id="transaction-form">
+                    <div class="mb-4">
+                        <label for="type" class="block text-sm font-medium text-gray-700">Transaction Type</label>
+                        <select id="type" name="type" class="w-full mt-1 p-2 rounded-lg border border-gray-300" required>
+                            <option value="">Select Type</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
                     </div>
-                    <div>
-                        <label for="amount" class="block text-gray-600">Amount</label>
-                        <input id="amount" type="number" min="0" step="0.01" class="w-full p-2 border rounded-lg" required />
+                    <div class="mb-4">
+                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="category" name="category" class="w-full mt-1 p-2 rounded-lg border border-gray-300" required>
+                            <option value="">Select Category</option>
+                        </select>
                     </div>
-                    <div>
-                        <label for="date" class="block text-gray-600">Date</label>
-                        <input id="date" type="date" class="w-full p-2 border rounded-lg" required />
+                    <div class="mb-4">
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Amount (USD)</label>
+                        <input type="number" id="amount" name="amount" min="0" step="0.01" class="w-full mt-1 p-2 rounded-lg border border-gray-300" required>
                     </div>
-                    <div>
-                        <label for="description" class="block text-gray-600">Description (Optional)</label>
-                        <textarea id="description" rows="3" class="w-full p-2 border rounded-lg"></textarea>
+                    <div class="mb-4">
+                        <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="date" name="date" class="w-full mt-1 p-2 rounded-lg border border-gray-300" required>
                     </div>
-                    <button type="submit" class="w-full p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Add Transaction</button>
+                    <div class="mb-4">
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description (Optional)</label>
+                        <textarea id="description" name="description" class="w-full mt-1 p-2 rounded-lg border border-gray-300" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-2 mt-2 bg-blue-500 text-white rounded-lg hover:scale-105 transition-transform">Add Transaction</button>
                 </form>
             </div>
 
-            <div class="card bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-bold text-gray-700 mb-4">Summary</h2>
-                <div class="flex justify-between text-lg">
-                    <div>
-                        <h3 class="text-green-600">Total Income</h3>
-                        <p id="total-income">$0.00</p>
-                    </div>
-                    <div>
-                        <h3 class="text-red-600">Total Expense</h3>
-                        <p id="total-expense">$0.00</p>
-                    </div>
-                </div>
-                <div class="my-4">
-                    <h3 class="text-blue-600">Balance</h3>
-                    <p id="balance">$0.00</p>
+            <!-- Summary Section -->
+            <div class="card bg-white shadow-lg rounded-xl p-4">
+                <h2 class="text-2xl font-semibold mb-4">Summary</h2>
+                <div>
+                    <p>Total Income: <span id="total-income" class="text-green-500">$0.00</span></p>
+                    <p>Total Expense: <span id="total-expense" class="text-red-500">$0.00</span></p>
+                    <p>Balance: <span id="balance" class="text-blue-500">$0.00</span></p>
                 </div>
             </div>
         </div>
 
-        <div class="my-8 card bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Transaction History</h2>
-            <table class="w-full border-collapse">
-                <thead class="bg-gray-200">
-                    <tr>
+        <!-- Transaction History Section -->
+        <div class="mt-8 card bg-white shadow-lg rounded-xl p-4">
+            <h2 class="text-2xl font-semibold mb-4">Transaction History</h2>
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-gray-200">
                         <th class="p-2">Date</th>
                         <th class="p-2">Description</th>
                         <th class="p-2">Category</th>
@@ -84,28 +73,32 @@
                     </tr>
                 </thead>
                 <tbody id="transactions-body">
-                    <tr><td colspan="5" class="text-center p-4">No transactions yet</td></tr>
+                    <tr>
+                        <td colspan="5" class="text-center p-4">No transactions yet</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <div class="my-8 card bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Charts</h2>
-            <div class="grid lg:grid-cols-2 gap-6">
-                <div>
-                    <canvas id="category-chart"></canvas>
-                </div>
-                <div>
-                    <canvas id="monthly-chart"></canvas>
-                </div>
+        <!-- Chart Section -->
+        <div class="mt-8 grid lg:grid-cols-2 gap-4">
+            <div class="card bg-white shadow-lg rounded-xl p-4">
+                <h2 class="text-2xl font-semibold mb-4">Expense by Category</h2>
+                <canvas id="category-chart"></canvas>
+            </div>
+            <div class="card bg-white shadow-lg rounded-xl p-4">
+                <h2 class="text-2xl font-semibold mb-4">Monthly Summary</h2>
+                <canvas id="monthly-chart"></canvas>
             </div>
         </div>
 
-        <div class="my-8 text-center">
-            <button id="export-csv" class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Export to CSV</button>
-        </div>
+        <!-- Export Button -->
+        <button id="export-csv" class="mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:scale-105 transition-transform">
+            Export to CSV
+        </button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
