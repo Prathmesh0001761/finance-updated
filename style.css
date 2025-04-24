@@ -1,174 +1,54 @@
-/* Base Styles */
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    transition: background-color 0.3s ease;
+/* Custom Styles */
+.card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
 }
 
-/* Form Elements */
-.form-select, .form-input {
-    @apply w-full p-3 border border-gray-300 rounded-lg;
+button {
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.form-select:focus, .form-input:focus {
-    @apply border-blue-500 ring-2 ring-blue-200 outline-none;
-    transform: scale(1.005);
-}
-
-/* Buttons */
-.btn-primary {
-    @apply w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-medium;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    @apply bg-blue-600;
-    transform: scale(1.02) translateY(-1px);
-    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
-}
-
-.btn-secondary {
-    @apply bg-white text-blue-500 border border-blue-500 py-2 px-4 rounded-lg text-sm font-medium;
-    transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-    @apply bg-blue-50;
+button:hover {
     transform: scale(1.05);
 }
 
-/* Summary Cards */
-.summary-card {
-    @apply rounded-xl shadow-lg p-4;
-    transition: all 0.3s ease;
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: rgba(66, 153, 225, 0.1);
 }
 
-.summary-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+table tbody tr:hover {
+    background-color: #edf2f7;
 }
 
-.income-card {
-    @apply bg-green-50;
+table th {
+    background-color: #e2e8f0;
+    text-align: left;
 }
 
-.expense-card {
-    @apply bg-red-50;
+#category-error {
+    transition: opacity 0.3s;
 }
 
-.balance-card {
-    @apply bg-blue-50;
-}
-
-.summary-title {
-    @apply text-sm font-medium text-gray-500;
-}
-
-.summary-amount {
-    @apply text-2xl font-bold;
-}
-
-.income-card .summary-amount {
-    @apply text-green-500;
-}
-
-.expense-card .summary-amount {
-    @apply text-red-500;
-}
-
-.balance-card .summary-amount {
-    @apply text-blue-500;
-}
-
-/* Table Styles */
-.table-header {
-    @apply border-b border-gray-200 bg-gray-50;
-}
-
-.table-header th {
-    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase;
-}
-
-.table-body {
-    @apply divide-y divide-gray-200;
-}
-
-.table-row {
-    transition: all 0.3s ease;
-}
-
-.table-row:hover {
-    @apply bg-gray-50;
-    transform: scale(1.005);
-}
-
-.income-row {
-    border-left: 4px solid #48bb78;
-}
-
-.expense-row {
-    border-left: 4px solid #f56565;
-}
-
-/* Error Message */
-.error-message {
-    @apply text-sm text-red-500 mt-1;
+#category-error.hidden {
     opacity: 0;
-    height: 0;
-    transition: all 0.3s ease;
 }
 
-.error-message.show {
-    opacity: 1;
-    height: auto;
+.card h2, .card h3 {
+    font-weight: 800;
 }
 
-/* Chart Container */
-.chart-container {
-    transition: all 0.3s ease;
+.text-green-600 {
+    color: #48bb78;
 }
 
-.chart-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+.text-red-600 {
+    color: #f56565;
 }
 
-/* Animations */
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.slide-up {
-    animation: slideUp 0.5s ease-out;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.pulse {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .summary-card {
-        @apply p-3;
-    }
-    
-    .summary-amount {
-        @apply text-xl;
-    }
+.text-blue-600 {
+    color: #4299e1;
 }
