@@ -29,6 +29,9 @@ function init() {
     updateSummary();
     renderCharts();
 
+    // Call updateCategories on initialization to populate the category dropdown
+    updateCategories();
+
     typeSelect.addEventListener('change', updateCategories);
     transactionForm.addEventListener('submit', addTransaction);
     exportBtn.addEventListener('click', exportToCSV);
