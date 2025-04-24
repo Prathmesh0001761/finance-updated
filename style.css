@@ -147,16 +147,4 @@ td button:hover {
     background-color: #fff;
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-}
-
-.charts h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-}
-
-canvas {
-    max-width: 100%;
-    height: auto;
-}
+    box-shadow: 0 0 5px rgba(0, 0, 0,
