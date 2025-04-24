@@ -1,9 +1,6 @@
-const transactionForm = document.getElementById('transaction-form');
 const typeSelect = document.getElementById('type');
 const categorySelect = document.getElementById('category');
-const amountInput = document.getElementById('amount');
-const dateInput = document.getElementById('date');
-const descriptionInput = document.getElementById('description');
+const transactionForm = document.getElementById('transaction-form');
 const transactionsBody = document.getElementById('transactions-body');
 const totalIncomeEl = document.getElementById('total-income');
 const totalExpenseEl = document.getElementById('total-expense');
@@ -21,7 +18,7 @@ function init() {
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - offset * 60 * 1000);
-    dateInput.value = localDate.toISOString().split('T')[0];
+    document.getElementById('date').value = localDate.toISOString().split('T')[0];
 
     loadTransactions();
     updateSummary();
@@ -32,17 +29,9 @@ function init() {
     exportBtn.addEventListener('click', exportToCSV);
 }
 
-const typeSelect = document.getElementById('type');
-const categorySelect = document.getElementById('category');
-
-const categories = {
-    income: ['Salary', 'Freelance', 'Investments', 'Gifts', 'Other Income'],
-    expense: ['Food', 'Transportation', 'Housing', 'Utilities', 'Healthcare', 'Entertainment', 'Education', 'Shopping', 'Other Expenses']
-};
-
 function updateCategories() {
     const type = typeSelect.value;
-    categorySelect.innerHTML = '<option value="">Select Category</option>'; // Reset categories
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
 
     if (type) {
         categories[type].forEach(category => {
@@ -51,18 +40,8 @@ function updateCategories() {
             option.textContent = category;
             categorySelect.appendChild(option);
         });
-    } else {
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'text-red-500 text-sm mt-2';
-        errorMessage.textContent = 'No categories available for the selected type';
-        categorySelect.parentElement.appendChild(errorMessage);
     }
 }
-
-typeSelect.addEventListener('change', updateCategories);
-
-// Call updateCategories on initial load to populate dropdown based on the default selection
-updateCategories();
 
 function addTransaction(e) {
     e.preventDefault();
@@ -70,9 +49,9 @@ function addTransaction(e) {
         id: Date.now(),
         type: typeSelect.value,
         category: categorySelect.value,
-        amount: parseFloat(amountInput.value),
-        date: dateInput.value,
-        description: descriptionInput.value
+        amount: parseFloat(document.getElementById('amount').value),
+        date: document.getElementById('date').value,
+        description: document.getElementById('description').value
     };
 
     const transactions = getTransactions();
@@ -91,7 +70,7 @@ function loadTransactions() {
     const transactions = getTransactions();
     transactionsBody.innerHTML = '';
     if (transactions.length === 0) {
-        transactionsBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No transactions yet</td></tr>';
+        transactionsBody.innerHTML = '<tr><td colspan="5" class="text-center">No transactions yet</td></tr>';
         return;
     }
 
@@ -120,6 +99,7 @@ function deleteTransaction(id) {
         const transactions = getTransactions().filter(t => t.id !== id);
         localStorage.setItem('transactions', JSON.stringify(transactions));
         init();
+    }
 }
 
 function updateSummary() {
@@ -180,11 +160,7 @@ function renderCharts() {
         const d = new Date(t.date);
         if (d.getFullYear() === currentYear) {
             const month = d.getMonth();
-            if (t.type === 'income') {
-                monthlyData[month].income += t.amount;
-            } else {
-                monthlyData[month].expense += t.amount;
-            }
+            monthlyData[month][t.type] += t.amount;
         }
     });
 
@@ -224,28 +200,19 @@ function renderCharts() {
 
 function exportToCSV() {
     const transactions = getTransactions();
-    const csvData = transactions.map(t => ({
-        Date: formatDate(t.date),
-        Description: t.description || '-',
-        Category: t.category,
-        Type: t.type,
-        Amount: t.amount.toFixed(2),
-    }));
-
-    const csvRows = [
-        ['Date', 'Description', 'Category', 'Type', 'Amount'], // headers
-        ...csvData.map(t => [t.Date, t.Description, t.Category, t.Type, t.Amount]),
+    const csvData = [
+        ['ID', 'Type', 'Category', 'Amount', 'Date', 'Description'],
+        ...transactions.map(t => [
+            t.id, t.type, t.category, t.amount.toFixed(2), t.date, t.description || ''
+        ])
     ];
-
-    const csvContent = csvRows.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'transactions.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'transactions.csv';
+    link.click();
 }
 
 init();
+
